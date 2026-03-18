@@ -1,0 +1,17 @@
+{
+  "name": "samudrapay",
+  "version": "1.0.0",
+  "description": "SamudraPay - Payment Gateway Indonesia",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site'"
+  },
+  "dependencies": {
+    "mongodb": "^5.8.0",
+    "axios": "^1.5.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "crypto": "^1.0.1"
+  }
+}
