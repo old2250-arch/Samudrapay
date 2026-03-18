@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi API - SamudraPay</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .docs-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 20px;
+    }
+    
+    .docs-card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    
+    .docs-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 1.5rem;
+    }
+    
+    .docs-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    
+    .docs-content {
+      padding: 1.5rem;
+    }
+    
+    .endpoint {
+      background: var(--gray-800);
+      color: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-family: monospace;
+      margin-bottom: 1rem;
+    }
+    
+    .method {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+      margin-right: 1rem;
+    }
+    
+    .method.post { background: var(--success); }
+    .method.get { background: var(--primary); }
+    
+    .param-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    
+    .param-table th {
+      text-align: left;
+      padding: 0.75rem;
+      background: var(--gray-50);
+      border-bottom: 2px solid var(--gray-200);
+    }
+    
+    .param-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .code-block {
+      background: var(--gray-900);
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-family: monospace;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    
+    .try-it {
+      background: var(--gray-50);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="logo">
+        <i class="fas fa-water"></i>
+        <span>SamudraPay</span>
+      </a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/docs" class="active">Dokumentasi</a>
+        <a href="/login" class="btn btn-outline">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="docs-container">
+    <h1 style="margin-bottom: 2rem;">Dokumentasi API</h1>
+    
+    <div class="docs-card">
+      <div class="docs-header">
+        <h2>Autentikasi</h2>
+      </div>
+      <div class="docs-content">
+        <p>Semua request ke API SamudraPay memerlukan API Key yang dikirim melalui header:</p>
+        <div class="code-block">
+          X-API-Key: your_api_key_here
+        </div>
+        <p>Atau menggunakan Bearer Token (untuk user login):</p>
+        <div class="code-block">
+          Authorization: Bearer your_jwt_token
+        </div>
+        <p>Dapatkan API Key dari <a href="/dashboard">Dashboard</a> setelah login.</p>
+      </div>
+    </div>
+
+    <div class="docs-card">
+      <div class="docs-header">
+        <h2>Create Deposit</h2>
+      </div>
+      <div class="docs-content">
+        <div class="endpoint">
+          <span class="method post">POST</span> /api/deposit/create
+        </div>
+        
+        <h3>Request Body</h3>
+        <table class="param-table">
+          <tr>
+            <th>Parameter</th>
+            <th>Tipe</th>
+            <th>Required</th>
+            <th>Deskripsi</th>
+          </tr>
+          <tr>
+            <td>nominal</td>
+            <td>number</td>
+            <td>Yes</td>
+            <td>Jumlah deposit (minimal 10000)</td>
+          </tr>
+        </table>
+
+        <h3>Response</h3>
+        <div class="code-block">
+{
+  "success": true,
+  "data": {
+    "id": "65a1b2c3d4e5f6...",
+    "nominal": 100000,
+    "fee": 350,
+    "totalBayar": 100350,
+    "metode": "QRIS",
+    "orkutTrxId": "TRX123456",
+    "qrImage": "https://.../qrcode.png",
+    "qrString": "000201010211...",
+    "status": "pending",
+    "expiredAt": "2024-01-13T10:30:00Z",
+    "createdAt": "2024-01-13T10:25:00Z"
+  }
+}
+        </div>
+
+        <h3>Contoh Penggunaan (Node.js)</h3>
+        <div class="code-block">
+const axios = require('axios');
+
+const response = await axios.post('https://samudrapay.com/api/deposit/create', {
+  nominal: 100000
+}, {
+  headers: {
+    'X-API-Key': 'your_api_key'
+  }
+});
+
+console.log(response.data);
+        </div>
+      </div>
+    </div>
+
+    <div class="docs-card">
+      <div class="docs-header">
+        <h2>Cek Status Deposit</h2>
+      </div>
+      <div class="docs-content">
+        <div class="endpoint">
+          <span class="method post">POST</span> /api/deposit/status
+        </div>
+        
+        <h3>Request Body</h3>
+        <table class="param-table">
+          <tr>
+            <th>Parameter</th>
+            <th>Tipe</th>
+            <th>Required</th>
+            <th>Deskripsi</th>
+          </tr>
+          <tr>
+            <td>depositId</td>
+            <td>string</td>
+            <td>Yes</td>
+            <td>ID deposit dari response create</td>
+          </tr>
+        </table>
+
+        <h3>Response</h3>
+        <div class="code-block">
+{
+  "success": true,
+  "data": {
+    "id": "65a1b2c3d4e5f6...",
+    "nominal": 100000,
+    "fee": 350,
+    "totalBayar": 100350,
+    "status": "success",
+    "expiredAt": "2024-01-13T10:30:00Z",
+    "createdAt": "2024-01-13T10:25:00Z"
+  }
+}
+        </div>
+
+        <h3>Status Codes</h3>
+        <ul>
+          <li><strong>pending</strong> - Menunggu pembayaran</li>
+          <li><strong>success</strong> - Pembayaran berhasil, saldo bertambah</li>
+          <li><strong>expired</strong> - QRIS expired (5 menit)</li>
+          <li><strong>canceled</strong> - Dibatalkan user</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="docs-card">
+      <div class="docs-header">
+        <h2>Cancel Deposit</h2>
+      </div>
+      <div class="docs-content">
+        <div class="endpoint">
+          <span class="method post">POST</span> /api/deposit/cancel
+        </div>
+        
+        <h3>Request Body</h3>
+        <table class="param-table">
+          <tr>
+            <th>Parameter</th>
+            <th>Tipe</th>
+            <th>Required</th>
+            <th>Deskripsi</th>
+          </tr>
+          <tr>
+            <td>depositId</td>
+            <td>string</td>
+            <td>Yes</td>
+            <td>ID deposit yang akan dibatalkan</td>
+          </tr>
+        </table>
+
+        <h3>Response</h3>
+        <div class="code-block">
+{
+  "success": true,
+  "message": "Deposit canceled successfully"
+}
+        </div>
+      </div>
+    </div>
+
+    <div class="docs-card">
+      <div class="docs-header">
+        <h2>Error Handling</h2>
+      </div>
+      <div class="docs-content">
+        <h3>Error Response Format</h3>
+        <div class="code-block">
+{
+  "success": false,
+  "message": "Deskripsi error"
+}
+        </div>
+
+        <h3>HTTP Status Codes</h3>
+        <ul>
+          <li><strong>200</strong> - Success (dengan success: true)</li>
+          <li><strong>400</strong> - Bad Request (validasi gagal)</li>
+          <li><strong>401</strong> - Unauthorized (API Key salah/tidak ada)</li>
+          <li><strong>403</strong> - Forbidden (tidak punya akses)</li>
+          <li><strong>404</strong> - Not Found</li>
+          <li><strong>500</strong> - Internal Server Error</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="docs-card">
+      <div class="docs-header">
+        <h2>Coba Langsung</h2>
+      </div>
+      <div class="docs-content">
+        <div class="try-it">
+          <div class="form-group">
+            <label>API Key</label>
+            <input type="text" id="test-api-key" placeholder="Masukkan API Key">
+          </div>
+          <div class="form-group">
+            <label>Endpoint</label>
+            <select id="test-endpoint">
+              <option value="/deposit/create">Create Deposit</option>
+              <option value="/deposit/status">Check Status</option>
+              <option value="/deposit/cancel">Cancel Deposit</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Request Body (JSON)</label>
+            <textarea id="test-body" rows="4">{"nominal": 10000}</textarea>
+          </div>
+          <button onclick="testAPI()" class="btn btn-primary">Send Request</button>
+          
+          <div class="code-block" id="test-response" style="margin-top: 1rem; display: none;">
+            Response will appear here
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>SamudraPay</h4>
+          <p>Payment gateway Indonesia yang mudah, aman, dan terpercaya.</p>
+          <div class="social-links">
+            <a href="https://t.me/samudrapay"><i class="fab fa-telegram"></i></a>
+            <a href="https://t.me/diskusisamudrapay"><i class="fab fa-telegram"></i></a>
+            <a href="https://wa.me/6283176421343"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h4>Kontak</h4>
+          <p><i class="fas fa-envelope"></i> hello@samudrapay.com</p>
+          <p><i class="fab fa-telegram"></i> @samudrapay</p>
+          <p><i class="fab fa-whatsapp"></i> +62 831-7642-1343</p>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>&copy; <span id="current-year"></span> SamudraPay. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script>
+    async function testAPI() {
+      const apiKey = document.getElementById('test-api-key').value;
+      const endpoint = document.getElementById('test-endpoint').value;
+      const body = document.getElementById('test-body').value;
+      
+      if (!apiKey) {
+        alert('Masukkan API Key');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api${endpoint}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': apiKey
+          },
+          body: body
+        });
+        
+        const data = await response.json();
+        const responseDiv = document.getElementById('test-response');
+        responseDiv.style.display = 'block';
+        responseDiv.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
