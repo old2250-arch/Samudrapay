@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - SamudraPay</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="/" class="logo">
+        <i class="fas fa-water"></i>
+        <span>SamudraPay</span>
+      </a>
+      <div class="nav-links">
+        <span id="user-greeting">Halo, <span id="username-display"></span></span>
+        <button onclick="logout()" class="btn btn-outline">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard">
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="#dashboard" class="active" onclick="showSection('dashboard')">
+          <i class="fas fa-home"></i> Dashboard
+        </a></li>
+        <li><a href="#deposit" onclick="showSection('deposit')">
+          <i class="fas fa-plus-circle"></i> Deposit
+        </a></li>
+        <li><a href="#withdraw" onclick="showSection('withdraw')">
+          <i class="fas fa-arrow-up"></i> Penarikan
+        </a></li>
+        <li><a href="#apikey" onclick="showSection('apikey')">
+          <i class="fas fa-key"></i> API Key
+        </a></li>
+        <li><a href="/docs">
+          <i class="fas fa-book"></i> Dokumentasi
+        </a></li>
+        <li><a href="#" onclick="checkAdmin()">
+          <i class="fas fa-shield-alt"></i> Admin
+        </a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <!-- Dashboard Section -->
+      <div id="dashboard-section" class="section active">
+        <h2>Dashboard</h2>
+        
+        <div class="card">
+          <div class="card-header">
+            <h3>Profil Saya</h3>
+          </div>
+          <div class="profile-info">
+            <div class="profile-item">
+              <span class="profile-label">Nama Lengkap</span>
+              <span class="profile-value" id="profile-name">-</span>
+            </div>
+            <div class="profile-item">
+              <span class="profile-label">Username</span>
+              <span class="profile-value" id="profile-username">-</span>
+            </div>
+            <div class="profile-item">
+              <span class="profile-label">Email</span>
+              <span class="profile-value" id="profile-email">-</span>
+            </div>
+            <div class="profile-item">
+              <span class="profile-label">Nomor WhatsApp</span>
+              <span class="profile-value" id="profile-nomor">-</span>
+            </div>
+            <div class="profile-item">
+              <span class="profile-label">Saldo</span>
+              <span class="profile-value saldo-badge" id="profile-saldo">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Riwayat Deposit</h3>
+          </div>
+          <div class="table-container">
+            <table id="deposit-history">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Nominal</th>
+                  <th>Fee</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="5" style="text-align: center">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Riwayat Penarikan</h3>
+          </div>
+          <div class="table-container">
+            <table id="withdraw-history">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Nominal</th>
+                  <th>Fee</th>
+                  <th>Bank</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="5" style="text-align: center">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deposit Section -->
+      <div id="deposit-section" class="section">
+        <h2>Deposit Saldo</h2>
+        
+        <div class="card">
+          <div class="card-header">
+            <h3>Form Deposit</h3>
+          </div>
+          <form onsubmit="createDeposit(event)" class="deposit-form">
+            <div class="form-group">
+              <label>Nominal Deposit (Min. Rp 10.000)</label>
+              <input type="number" name="nominal" min="10000" step="1000" required>
+            </div>
+            <div class="fee-info">
+              <i class="fas fa-info-circle"></i>
+              Fee random Rp 200 - 500 akan ditambahkan ke total pembayaran
+            </div>
+            <button type="submit" class="btn btn-primary">Buat QRIS</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Withdraw Section -->
+      <div id="withdraw-section" class="section">
+        <h2>Penarikan Saldo</h2>
+        
+        <div class="card">
+          <div class="card-header">
+            <h3>Form Penarikan</h3>
+          </div>
+          <form onsubmit="createWithdraw(event)">
+            <div class="form-group">
+              <label>Nominal Penarikan (Min. Rp 10.000)</label>
+              <input type="number" name="nominal" min="10000" step="1000" required>
+            </div>
+            <div class="form-group">
+              <label>Bank</label>
+              <select name="bank" required>
+                <option value="">Pilih Bank</option>
+                <option value="BCA">BCA</option>
+                <option value="BNI">BNI</option>
+                <option value="BRI">BRI</option>
+                <option value="Mandiri">Mandiri</option>
+                <option value="BSI">BSI</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Nomor Rekening</label>
+              <input type="text" name="nomorRekening" required>
+            </div>
+            <div class="form-group">
+              <label>Atas Nama</label>
+              <input type="text" name="atasNama" required>
+            </div>
+            <div class="fee-info">
+              <i class="fas fa-info-circle"></i>
+              Fee penarikan Rp 2.000 akan dipotong dari saldo
+            </div>
+            <button type="submit" class="btn btn-primary">Ajukan Penarikan</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- API Key Section -->
+      <div id="apikey-section" class="section">
+        <h2>API Key</h2>
+        
+        <div class="card">
+          <div class="card-header">
+            <h3>Your API Key</h3>
+            <button onclick="generateApiKey()" class="btn btn-outline">
+              <i class="fas fa-sync-alt"></i> Generate New
+            </button>
+          </div>
+          <div class="api-key-container">
+            <code class="api-key" id="api-key">Loading...</code>
+            <div class="api-key-actions">
+              <button onclick="copyApiKey()" class="btn btn-small" title="Copy">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+          <p class="fee-info">
+            <i class="fas fa-exclamation-triangle"></i>
+            Jangan bagikan API Key Anda kepada siapapun!
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Dokumentasi API</h3>
+          </div>
+          <p>Gunakan API Key di atas untuk mengintegrasikan SamudraPay ke aplikasi Anda.</p>
+          <a href="/docs" class="btn btn-primary">Lihat Dokumentasi</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/main.js"></script>
+  <script>
+    function showSection(section) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+      
+      document.getElementById(`${section}-section`).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function checkAdmin() {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user.role === 'admin') {
+        window.location.href = '/admin';
+      } else {
+        alert('Hanya untuk admin');
+      }
+    }
+
+    // Load user data
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      document.getElementById('username-display').textContent = user.username || 'User';
+    });
+  </script>
+</body>
+</html>
